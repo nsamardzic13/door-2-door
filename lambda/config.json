@@ -1,0 +1,75 @@
+{
+    "secretName": "rds!db-7314554c-0601-49b2-8e85-dfcbb8b05548",
+    "rds": {
+        "host": "dwh.ceqh5nqocpo9.us-east-1.rds.amazonaws.com",
+        "database": "postgres",
+        "port": 5432
+    },
+    "landingBucketName": "d2d-landing-bucket",
+    "dataLakeBucketName": "d2d-data-lake-bucket",
+    "bucketPrefix": "VEHICLE",
+    "vehicleLocation": {
+        "toKeep": [
+            "data.id",
+            "organization_id",
+            "data.location.lat",
+            "data.location.lng",
+            "at"
+        ],
+        "rename": {
+            "data.id": "id",
+            "organization_id": "org_id",
+            "data.location.lat": "lat",
+            "data.location.lng": "lng",
+            "at": "record_timestamp"
+        },
+        "targetSchema": "staging",
+        "targetTable": "stg_vehicle_location"
+    },
+    "vehicleRegister": {
+        "toKeep": [
+            "data.id",
+            "organization_id",
+            "event",
+            "at"
+        ],
+        "rename": {
+            "data.id": "id",
+            "organization_id": "org_id",
+            "event": "event_type",
+            "at": "record_timestamp"
+        },
+        "targetSchema": "staging",
+        "targetTable": "stg_vehicle_register"
+    },
+    "operatingPeriod": {
+        "toKeep": [
+            "data.id",
+            "organization_id",
+            "event",
+            "at",
+            "data.start",
+            "data.finish"
+        ],
+        "rename": {
+            "data.id": "id",
+            "organization_id": "org_id",
+            "event": "event_type",
+            "at": "record_timestamp",
+            "data.start": "period_start",
+            "data.finish": "period_finish"
+        },
+        "targetSchema": "staging",
+        "targetTable": "stg_operatin_period"
+    },
+    "storedProcedures": [
+        "call staging.update_dim_vehicle()",
+        "call staging.update_dim_operating_period()",
+        "call staging.update_fact_vehicle_location()"
+    ],
+    "tablesToTruncate": [
+        "staging.stg_vehicle_register",
+        "staging.stg_vehicle_location",
+        "staging.stg_operatin_period"
+    ]
+}

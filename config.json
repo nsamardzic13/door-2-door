@@ -1,0 +1,20 @@
+{
+    "topicID": "Door2DoorTopic",
+    "emailList": [
+        "nikola.samardzic1997@gmail.com"
+    ],
+    "roleID": "Door2DoorRole",
+    "secretID": "Door2DoorSecret",
+    "secretARN": "arn:aws:secretsmanager:us-east-1:371125626138:secret:rds!db-7314554c-0601-49b2-8e85-dfcbb8b05548-eRMfY5",
+    "layerName": "Door2DoorLayer",
+    "layersARN": [
+        "arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p39-SQLAlchemy:9",
+        "arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p39-pandas:11",
+        "arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p39-numpy:10",
+        "arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p39-psycopg2-binary:1"
+    ],
+    "lambdaName": "Door2DoorLambda",
+    "lambdaMemorySize": 512,
+    "ruleName": "Door2DoorRule",
+    "alarmName": "Door2DoorAlarm"
+}
