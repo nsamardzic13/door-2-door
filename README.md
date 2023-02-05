@@ -47,7 +47,7 @@ Lambda is split in multiple steps:
 4. Move processed S3 objects to Data Lake Bucket
 5. Truncate staging tables in case there were no failures
 
-Note: Moving processed S3 objects is currently commented out. Objects are just being copied to the Data Lake Bucket, but they are not deleted from the source Landing Bucket to save some time in case some more testing needs to be done.
+**Note:** Moving processed S3 objects is currently commented out. Objects are just being copied to the Data Lake Bucket, but they are not deleted from the source Landing Bucket to save some time in case some more testing needs to be done.
 
 ### Helper Scripts
 
@@ -60,7 +60,7 @@ Besided AWS Solution, additionals script were created. Some of them are used as 
 * SetupRDSObject
   * Script executing .sql queries. Creating schemas, tables and stored procedures in RDS Postgres.
 
-Execpt 00-DataCheck, other script are a "one-time deal". They are just being executed one time to create desired environment and database structure needed to complete the challenge.
+Except 00-DataCheck, other script are a "one-time deal". They are just being executed one time to create desired environment and database structure needed for this challenge.
 
 ## Deploying the Solution
 
