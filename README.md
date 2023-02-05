@@ -1,58 +1,71 @@
+# Door2Door Code Challenge
 
-# Welcome to your CDK Python project!
+**door2door collects the live position of all vehicles in its fleet in real-time via a GPS sensor in each**
+vehicle. These vehicles run in operating periods that are managed by door2door's operators. An API is
+responsible for collecting information from the vehicles and place it on an S3 bucket, in raw format, to
+be consumed.
 
-This is a blank project for CDK development with Python.
+**The goal of this challenge is to automate the build of a simple yet scalable data lake and data warehouse**
+that will enable our BI team to answer questions.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## **Technical assumptions**
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+* The fetching process should only get data from a certain day on each run and should run every day;
+* **Files on the ”raw” S3 bucket can disappear but we might want to process them differently in the**
+  future;
+* **No need to answer the question stated in the introduction;**
+* **If your solution is setup to run locally, it must be containerized;**
+* **There is no need for paid, expensive and highly performant data warehouses. You can use a ”standard” SQL database.**
 
-To manually create a virtualenv on MacOS and Linux:
+## Solution
 
+The solution is using various technologies. The solution is cloud-based on AWS.
+
+Technologies used are:
+
+* **Deployed via Web Console**
+  * AWS S3
+  * * Landing and Data Lake Buckets
+  * AWS RDS - Postgres
+    * In the real world scenario, this would be a DWH (such as AWS Redshift)
+  * AWS Secrets Manager
+    * Storing RDS credentials
+* **Deployed via AWS CDK**
+  * AWS Lambda
+    * Scheduled Python code extracting, transforming and loading data
+    * Moving processed data to Data Lake bucket
+  * AWS SNS, Cloudwatch
+    * Creating alarm in case of lambda's failure with email alerting
+
+### Lambda Steps
+
+Lambda is split in multiple steps:
+
+1. Extracting data from Landing S3
+2. Load data to staging tables
+3. Execute stored procedures on RDS
+4. Move processed S3 objects to Data Lake Bucket
+5. Truncate staging tables in case there were no failures
+
+Note: Moving processed S3 objects is currently commented out. Objects are just being copied to the Data Lake Bucket, but they are not deleted from the source Landing Bucket to save some time in case some more testing needs to be done.
+
+### Helper Scripts
+
+Besided AWS Solution, additionals script were created. Some of them are used as a way to prepare environment and some to get introducted to dataset used for this challenge. Each "helper script" can be found in its own folder:
+
+* 00-DataCheck
+  * Simple .ipynb notebook showing basic data information such as null count and data type
+* 01-PopulateS3
+  * Script used to transfer data from local folder (data) to landing S3 bucket
+* SetupRDSObject
+  * Script executing .sql queries. Creating schemas, tables and stored procedures in RDS Postgres.
+
+Execpt 00-DataCheck, other script are a "one-time deal". They are just being executed one time to create desired environment and database structure needed to complete the challenge.
+
+## Deploying the Solution
+
+To deploy the solution created using CDK, we can use simple command:
+
+```bash
+cdk deploy --profile <profile_name>
 ```
-$ python -m venv .venv
-```
-
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
-
-```
-$ source .venv/bin/activate
-```
-
-If you are a Windows platform, you would activate the virtualenv like this:
-
-```
-% .venv\Scripts\activate.bat
-```
-
-Once the virtualenv is activated, you can install the required dependencies.
-
-```
-$ pip install -r requirements.txt
-```
-
-At this point you can now synthesize the CloudFormation template for this code.
-
-```
-$ cdk synth
-```
-
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
-
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
-
-Enjoy!
